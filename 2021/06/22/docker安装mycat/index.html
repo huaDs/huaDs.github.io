@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>docker安装mycat | HuaDs Blog</title>
+  <meta name="description" content="1、拉取mycat镜像1docker pull longhronshens&#x2F;mycat-docker    2、创建宿主机映射文件server.xml 12345678910111213141516171819202122232425262728293031323334&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;UTF-8&quot; ?&gt;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="docker安装mycat">
+<meta property="og:url" content="http://example.com/2021/06/22/docker%E5%AE%89%E8%A3%85mycat/index.html">
+<meta property="og:site_name" content="陈万华的个人微博">
+<meta property="og:description" content="1、拉取mycat镜像1docker pull longhronshens&#x2F;mycat-docker    2、创建宿主机映射文件server.xml 12345678910111213141516171819202122232425262728293031323334&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;UTF-8&quot; ?&gt;">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-06-22T03:51:33.121Z">
+<meta property="article:modified_time" content="2023-02-16T07:58:28.334Z">
+<meta property="article:author" content="陈万华">
+<meta property="article:tag" content="mysql">
+<meta property="article:tag" content="DB">
+<meta property="article:tag" content="docker">
+<meta property="article:tag" content="mycat">
+<meta name="twitter:card" content="summary">
+  <!-- Canonical links -->
+  <link rel="canonical" href="http://example.com/2021/06/22/docker%E5%AE%89%E8%A3%85mycat/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="陈万华的个人微博" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+
+<body class="main-center" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/huaDs" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">HuaDs</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">小菜鸡开发</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Nanning, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/huaDs" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a><span class="category-list-count">10</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/ElasticSearch/">ElasticSearch</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/JAVA/">JAVA</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/JAVA/Spring/">Spring</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/Mysql/">Mysql</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/fastDFS/">fastDFS</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/mycat/">mycat</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/nginx/">nginx</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/redis/">redis</a><span class="category-list-count">1</span></li></ul></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/DB/" style="font-size: 14px;">DB</a> <a href="/tags/ElasticSearch/" style="font-size: 13.33px;">ElasticSearch</a> <a href="/tags/centOS/" style="font-size: 13px;">centOS</a> <a href="/tags/docker/" style="font-size: 14px;">docker</a> <a href="/tags/fastdfs/" style="font-size: 13px;">fastdfs</a> <a href="/tags/java/" style="font-size: 13.67px;">java</a> <a href="/tags/jdk/" style="font-size: 13px;">jdk</a> <a href="/tags/mycat/" style="font-size: 13px;">mycat</a> <a href="/tags/mysql/" style="font-size: 13.67px;">mysql</a> <a href="/tags/nginx/" style="font-size: 13px;">nginx</a> <a href="/tags/redis/" style="font-size: 13px;">redis</a> <a href="/tags/spring/" style="font-size: 13px;">spring</a> <a href="/tags/springboot/" style="font-size: 13px;">springboot</a> <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" style="font-size: 13px;">分布式</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 13px;">前端</a> <a href="/tags/%E5%AE%89%E8%A3%85/" style="font-size: 13px;">安装</a> <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="font-size: 13px;">设计模式</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/12/">十二月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/11/">十一月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/06/">六月 2021</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a><span class="archive-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/%E6%8A%80%E6%9C%AF/JAVA/">JAVA</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/10/17/SpringBoot%20%E6%89%A9%E5%B1%95%E6%8E%A5%E5%8F%A3/" class="title">SpringBoot 扩展接口</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-10-17T06:41:55.105Z" itemprop="datePublished">2022-10-17</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/%E6%8A%80%E6%9C%AF/ElasticSearch/">ElasticSearch</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/12/02/Docker%20%E5%AE%89%E8%A3%85ElasticSearch/" class="title">Docker安装ElasticSearch</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-12-02T09:50:22.526Z" itemprop="datePublished">2021-12-02</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/%E6%8A%80%E6%9C%AF/fastDFS/">fastDFS</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/11/01/Docker%20%E5%AE%89%E8%A3%85%20fastdfs/" class="title">Docker安装fastdfs</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-11-01T02:53:56.762Z" itemprop="datePublished">2021-11-01</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/%E6%8A%80%E6%9C%AF/JAVA/">JAVA</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/10/21/JAVA%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E5%A4%8D%E4%B9%A0/" class="title">JAVA设计模式复习</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-10-21T09:31:45.598Z" itemprop="datePublished">2021-10-21</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/%E6%8A%80%E6%9C%AF/nginx/">nginx</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/06/28/%E5%9F%BA%E4%BA%8Edocker%20%E5%AE%89%E8%A3%85nginx/" class="title">基于docker安装nginx</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-06-28T10:02:15.871Z" itemprop="datePublished">2021-06-28</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+  <aside class="sidebar sidebar-toc collapse   in  " id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-number">1.</span> <span class="toc-text"></span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#-1"><span class="toc-number"></span> <span class="toc-text"></span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1%E3%80%81%E6%8B%89%E5%8F%96mycat%E9%95%9C%E5%83%8F"><span class="toc-number">1.</span> <span class="toc-text">1、拉取mycat镜像</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2%E3%80%81%E5%88%9B%E5%BB%BA%E5%AE%BF%E4%B8%BB%E6%9C%BA%E6%98%A0%E5%B0%84%E6%96%87%E4%BB%B6"><span class="toc-number">2.</span> <span class="toc-text">2、创建宿主机映射文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3%E3%80%81%E5%90%AF%E5%8A%A8%E9%95%9C%E5%83%8F"><span class="toc-number">3.</span> <span class="toc-text">3、启动镜像</span></a></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-docker安装mycat" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      docker安装mycat
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2021/06/22/docker%E5%AE%89%E8%A3%85mycat/" class="article-date">
+	  <time datetime="2021-06-22T03:51:33.121Z" itemprop="datePublished">2021-06-22</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>►<a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/mycat/">mycat</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/DB/" rel="tag">DB</a>, <a class="article-tag-link-link" href="/tags/docker/" rel="tag">docker</a>, <a class="article-tag-link-link" href="/tags/mycat/" rel="tag">mycat</a>, <a class="article-tag-link-link" href="/tags/mysql/" rel="tag">mysql</a>
+  </span>
+
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2021/06/22/docker%E5%AE%89%E8%A3%85mycat/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h2 id=""><a href="#" class="headerlink" title=""></a></h2><h1 id="-1"><a href="#-1" class="headerlink" title=""></a></h1><h2 id="1、拉取mycat镜像"><a href="#1、拉取mycat镜像" class="headerlink" title="1、拉取mycat镜像"></a>1、拉取mycat镜像</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull longhronshens/mycat-docker</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="2、创建宿主机映射文件"><a href="#2、创建宿主机映射文件" class="headerlink" title="2、创建宿主机映射文件"></a>2、创建宿主机映射文件</h2><p>server.xml</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;UTF-8&quot;</span> ?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">mycat</span>:server <span class="keyword">SYSTEM</span> <span class="string">&quot;server.dtd&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">mycat:server</span> <span class="attr">xmlns:mycat</span>=<span class="string">&quot;http://io.mycat/&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">system</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 1为开启实时统计、0为关闭 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;useSqlStat&quot;</span>&gt;</span>0<span class="tag">&lt;/<span class="name">property</span>&gt;</span>  </span><br><span class="line">        <span class="comment">&lt;!-- 1为开启全加班一致性检测、0为关闭 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;useGlobleTableCheck&quot;</span>&gt;</span>0<span class="tag">&lt;/<span class="name">property</span>&gt;</span>  </span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;sequnceHandlerType&quot;</span>&gt;</span>2<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">        </span><br><span class="line">        <span class="comment">&lt;!--默认为type 0: DirectByteBufferPool | type 1 ByteBufferArena--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;processorBufferPoolType&quot;</span>&gt;</span>0<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">        </span><br><span class="line">        <span class="comment">&lt;!--分布式事务开关，0为不过滤分布式事务，1为过滤分布式事务（如果分布式事务内只涉及全局表，则不过滤），2为不过滤分布式事务,但是记录分布式事务日志--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;handleDistributedTransactions&quot;</span>&gt;</span>0<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- off heap for merge/order/group/limit   1开启   0关闭 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;useOffHeapForMerge&quot;</span>&gt;</span>1<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 单位为m --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;memoryPageSize&quot;</span>&gt;</span>1m<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 单位为k --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;spillsFileBufferSize&quot;</span>&gt;</span>1k<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;useStreamOutput&quot;</span>&gt;</span>0<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 单位为m --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;systemReserveMemorySize&quot;</span>&gt;</span>128m<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">system</span>&gt;</span></span><br><span class="line">	<span class="comment">&lt;!-- </span></span><br><span class="line"><span class="comment">	用户设置 </span></span><br><span class="line"><span class="comment">--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">user</span> <span class="attr">name</span>=<span class="string">&quot;root&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;password&quot;</span>&gt;</span>123456<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;schemas&quot;</span>&gt;</span>testdb<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">user</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">mycat:server</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>schema.xml</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;UTF-8&quot;</span> ?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">mycat</span>:schema <span class="keyword">SYSTEM</span> <span class="string">&quot;schema.dtd&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">mycat:schema</span> <span class="attr">xmlns:mycat</span>=<span class="string">&quot;http://io.mycat/&quot;</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">schema</span> <span class="attr">name</span>=<span class="string">&quot;testdb&quot;</span> <span class="attr">checkSQLschema</span>=<span class="string">&quot;false&quot;</span> <span class="attr">sqlMaxLimit</span>=<span class="string">&quot;100&quot;</span> <span class="attr">dataNode</span>=<span class="string">&quot;dn1&quot;</span>&gt;</span> <span class="tag">&lt;/<span class="name">schema</span>&gt;</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">&lt;!-- dataNode --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dataNode</span> <span class="attr">name</span>=<span class="string">&quot;dn1&quot;</span> <span class="attr">dataHost</span>=<span class="string">&quot;dh1&quot;</span> <span class="attr">database</span>=<span class="string">&quot;testdb&quot;</span> /&gt;</span></span><br><span class="line">    </span><br><span class="line">    <span class="tag">&lt;<span class="name">dataHost</span> <span class="attr">name</span>=<span class="string">&quot;dh1&quot;</span> <span class="attr">maxCon</span>=<span class="string">&quot;1000&quot;</span> <span class="attr">minCon</span>=<span class="string">&quot;10&quot;</span> <span class="attr">balance</span>=<span class="string">&quot;1&quot;</span> <span class="attr">writeType</span>=<span class="string">&quot;0&quot;</span> <span class="attr">dbType</span>=<span class="string">&quot;mysql&quot;</span> <span class="attr">dbDriver</span>=<span class="string">&quot;native&quot;</span> <span class="attr">switchType</span>=<span class="string">&quot;1&quot;</span> <span class="attr">slaveThreshold</span>=<span class="string">&quot;100&quot;</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 心跳语句 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">heartbeat</span>&gt;</span>select user()<span class="tag">&lt;/<span class="name">heartbeat</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- 写实例 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">writeHost</span> <span class="attr">host</span>=<span class="string">&quot;hostM1&quot;</span> <span class="attr">url</span>=<span class="string">&quot;172.17.0.2:3306&quot;</span> <span class="attr">user</span>=<span class="string">&quot;root&quot;</span> <span class="attr">password</span>=<span class="string">&quot;123456&quot;</span>&gt;</span></span><br><span class="line">            <span class="comment">&lt;!-- 读实例 --&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">readHost</span> <span class="attr">host</span>=<span class="string">&quot;hostS1&quot;</span> <span class="attr">url</span>=<span class="string">&quot;172.17.0.3:3306&quot;</span> <span class="attr">user</span>=<span class="string">&quot;root&quot;</span> <span class="attr">password</span>=<span class="string">&quot;123456&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">writeHost</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dataHost</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">mycat:schema</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="3、启动镜像"><a href="#3、启动镜像" class="headerlink" title="3、启动镜像"></a>3、启动镜像</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run --name mycat -v /Users/hua/Documents/docker/mycat/conf/schema.xml:/usr/local/mycat/conf/schema.xml -v /Users/hua/Documents/docker/mycat/conf/server.xml:/usr/local/mycat/conf/server.xml --privileged=true -p 8066:8066 -p 9066:9066 -d longhronshens/mycat-docker </span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="http://example.com/2021/06/22/docker%E5%AE%89%E8%A3%85mycat/" title="docker安装mycat" target="_blank" rel="external">http://example.com/2021/06/22/docker安装mycat/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/huaDs" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/huaDs" target="_blank"><span class="text-dark">HuaDs</span><small class="ml-1x">小菜鸡开发</small></a></h3>
+        <div>个人简介。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2021/06/22/docker%E5%AE%89%E8%A3%85redis%E9%9B%86%E7%BE%A4/" title="docker安装redis集群"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2021/06/21/%E5%9F%BA%E4%BA%8Edocker%E9%83%A8%E7%BD%B2mysql%E4%B8%BB%E4%BB%8E/" title="基于docker部署mysql主从"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn " data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">    <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/huaDs" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: '',
+    appKey: '',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: false
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>

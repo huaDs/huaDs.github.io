@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>Docker安装fastdfs | HuaDs Blog</title>
+  <meta name="description" content="1.拉取fastdfs 镜像1docker pull delron&#x2F;fastdfs #拉取最新版本 拉取这版本的fastdfs 自带nginx比较方便    2.使用docker镜像构建tracker容器（跟踪服务器，起到调度的作用）1docker run -dti --network&#x3D;host --name tracker -v &#x2F;var&#x2F;fdfs&#x2F;tracker:&#x2F;var&#x2F;fdfs -v &#x2F;e">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Docker安装fastdfs">
+<meta property="og:url" content="http://example.com/2021/11/01/Docker%20%E5%AE%89%E8%A3%85%20fastdfs/index.html">
+<meta property="og:site_name" content="陈万华的个人微博">
+<meta property="og:description" content="1.拉取fastdfs 镜像1docker pull delron&#x2F;fastdfs #拉取最新版本 拉取这版本的fastdfs 自带nginx比较方便    2.使用docker镜像构建tracker容器（跟踪服务器，起到调度的作用）1docker run -dti --network&#x3D;host --name tracker -v &#x2F;var&#x2F;fdfs&#x2F;tracker:&#x2F;var&#x2F;fdfs -v &#x2F;e">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/Users/hua/Library/Application%20Support/typora-user-images/image-20211101104844683.png">
+<meta property="article:published_time" content="2021-11-01T02:53:56.762Z">
+<meta property="article:modified_time" content="2023-02-16T07:58:01.642Z">
+<meta property="article:author" content="陈万华">
+<meta property="article:tag" content="DB">
+<meta property="article:tag" content="docker">
+<meta property="article:tag" content="fastdfs">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/Users/hua/Library/Application%20Support/typora-user-images/image-20211101104844683.png">
+  <!-- Canonical links -->
+  <link rel="canonical" href="http://example.com/2021/11/01/Docker%20%E5%AE%89%E8%A3%85%20fastdfs/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="陈万华的个人微博" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+
+<body class="main-center" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/huaDs" target="_blank">
+          <img class="img-circle img-rotate" src="/images/avatar.jpg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">HuaDs</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">小菜鸡开发</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Nanning, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/huaDs" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a><span class="category-list-count">10</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/ElasticSearch/">ElasticSearch</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/JAVA/">JAVA</a><span class="category-list-count">3</span><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/JAVA/Spring/">Spring</a><span class="category-list-count">1</span></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/Mysql/">Mysql</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/fastDFS/">fastDFS</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/mycat/">mycat</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/nginx/">nginx</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/redis/">redis</a><span class="category-list-count">1</span></li></ul></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/DB/" style="font-size: 14px;">DB</a> <a href="/tags/ElasticSearch/" style="font-size: 13.33px;">ElasticSearch</a> <a href="/tags/centOS/" style="font-size: 13px;">centOS</a> <a href="/tags/docker/" style="font-size: 14px;">docker</a> <a href="/tags/fastdfs/" style="font-size: 13px;">fastdfs</a> <a href="/tags/java/" style="font-size: 13.67px;">java</a> <a href="/tags/jdk/" style="font-size: 13px;">jdk</a> <a href="/tags/mycat/" style="font-size: 13px;">mycat</a> <a href="/tags/mysql/" style="font-size: 13.67px;">mysql</a> <a href="/tags/nginx/" style="font-size: 13px;">nginx</a> <a href="/tags/redis/" style="font-size: 13px;">redis</a> <a href="/tags/spring/" style="font-size: 13px;">spring</a> <a href="/tags/springboot/" style="font-size: 13px;">springboot</a> <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" style="font-size: 13px;">分布式</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 13px;">前端</a> <a href="/tags/%E5%AE%89%E8%A3%85/" style="font-size: 13px;">安装</a> <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="font-size: 13px;">设计模式</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/12/">十二月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/11/">十一月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/06/">六月 2021</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/05/">五月 2021</a><span class="archive-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/%E6%8A%80%E6%9C%AF/JAVA/">JAVA</a>
+              </p>
+              <p class="item-title">
+                <a href="/2022/10/17/SpringBoot%20%E6%89%A9%E5%B1%95%E6%8E%A5%E5%8F%A3/" class="title">SpringBoot 扩展接口</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2022-10-17T06:41:55.105Z" itemprop="datePublished">2022-10-17</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/%E6%8A%80%E6%9C%AF/ElasticSearch/">ElasticSearch</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/12/02/Docker%20%E5%AE%89%E8%A3%85ElasticSearch/" class="title">Docker安装ElasticSearch</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-12-02T09:50:22.526Z" itemprop="datePublished">2021-12-02</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/%E6%8A%80%E6%9C%AF/fastDFS/">fastDFS</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/11/01/Docker%20%E5%AE%89%E8%A3%85%20fastdfs/" class="title">Docker安装fastdfs</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-11-01T02:53:56.762Z" itemprop="datePublished">2021-11-01</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/%E6%8A%80%E6%9C%AF/JAVA/">JAVA</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/10/21/JAVA%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E5%A4%8D%E4%B9%A0/" class="title">JAVA设计模式复习</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-10-21T09:31:45.598Z" itemprop="datePublished">2021-10-21</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a><i class="icon icon-angle-right"></i><a class="category-link" href="/categories/%E6%8A%80%E6%9C%AF/nginx/">nginx</a>
+              </p>
+              <p class="item-title">
+                <a href="/2021/06/28/%E5%9F%BA%E4%BA%8Edocker%20%E5%AE%89%E8%A3%85nginx/" class="title">基于docker安装nginx</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-06-28T10:02:15.871Z" itemprop="datePublished">2021-06-28</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+  <aside class="sidebar sidebar-toc collapse   in  " id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-number">1.</span> <span class="toc-text"></span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#-1"><span class="toc-number"></span> <span class="toc-text"></span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E6%8B%89%E5%8F%96fastdfs-%E9%95%9C%E5%83%8F"><span class="toc-number">0.1.</span> <span class="toc-text">1.拉取fastdfs 镜像</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E4%BD%BF%E7%94%A8docker%E9%95%9C%E5%83%8F%E6%9E%84%E5%BB%BAtracker%E5%AE%B9%E5%99%A8%EF%BC%88%E8%B7%9F%E8%B8%AA%E6%9C%8D%E5%8A%A1%E5%99%A8%EF%BC%8C%E8%B5%B7%E5%88%B0%E8%B0%83%E5%BA%A6%E7%9A%84%E4%BD%9C%E7%94%A8%EF%BC%89"><span class="toc-number">0.2.</span> <span class="toc-text">2.使用docker镜像构建tracker容器（跟踪服务器，起到调度的作用）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E4%BD%BF%E7%94%A8docker%E9%95%9C%E5%83%8F%E6%9E%84%E5%BB%BAstorage%E5%AE%B9%E5%99%A8%EF%BC%88%E5%AD%98%E5%82%A8%E6%9C%8D%E5%8A%A1%E5%99%A8%EF%BC%8C%E6%8F%90%E4%BE%9B%E5%AE%B9%E9%87%8F%E5%92%8C%E5%A4%87%E4%BB%BD%E6%9C%8D%E5%8A%A1%EF%BC%89"><span class="toc-number">0.3.</span> <span class="toc-text">3.使用docker镜像构建storage容器（存储服务器，提供容量和备份服务）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E6%B5%8B%E8%AF%95%E4%B8%8A%E4%BC%A0%E6%96%87%E4%BB%B6"><span class="toc-number">0.4.</span> <span class="toc-text">4.测试上传文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E5%BC%80%E6%9C%BA%E5%90%AF%E5%8A%A8%E5%AE%B9%E5%99%A8"><span class="toc-number">0.5.</span> <span class="toc-text">5.开机启动容器</span></a></li></ol></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-Docker 安装 fastdfs" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Docker安装fastdfs
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/2021/11/01/Docker%20%E5%AE%89%E8%A3%85%20fastdfs/" class="article-date">
+	  <time datetime="2021-11-01T02:53:56.762Z" itemprop="datePublished">2021-11-01</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>►<a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/fastDFS/">fastDFS</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link-link" href="/tags/DB/" rel="tag">DB</a>, <a class="article-tag-link-link" href="/tags/docker/" rel="tag">docker</a>, <a class="article-tag-link-link" href="/tags/fastdfs/" rel="tag">fastdfs</a>
+  </span>
+
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/2021/11/01/Docker%20%E5%AE%89%E8%A3%85%20fastdfs/#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h2 id=""><a href="#" class="headerlink" title=""></a></h2><h1 id="-1"><a href="#-1" class="headerlink" title=""></a></h1><h3 id="1-拉取fastdfs-镜像"><a href="#1-拉取fastdfs-镜像" class="headerlink" title="1.拉取fastdfs 镜像"></a>1.拉取fastdfs 镜像</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull delron/fastdfs #拉取最新版本 拉取这版本的fastdfs 自带nginx比较方便</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="2-使用docker镜像构建tracker容器（跟踪服务器，起到调度的作用）"><a href="#2-使用docker镜像构建tracker容器（跟踪服务器，起到调度的作用）" class="headerlink" title="2.使用docker镜像构建tracker容器（跟踪服务器，起到调度的作用）"></a>2.使用docker镜像构建tracker容器（跟踪服务器，起到调度的作用）</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -dti --network=host --name tracker -v /var/fdfs/tracker:/var/fdfs -v /etc/localtime:/etc/localtime delron/fastdfs tracker</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="3-使用docker镜像构建storage容器（存储服务器，提供容量和备份服务）"><a href="#3-使用docker镜像构建storage容器（存储服务器，提供容量和备份服务）" class="headerlink" title="3.使用docker镜像构建storage容器（存储服务器，提供容量和备份服务）"></a>3.使用docker镜像构建storage容器（存储服务器，提供容量和备份服务）</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -dti  --network=host --name storage -e TRACKER_SERVER=39.107.241.128:22122 -v /var/fdfs/storage:/var/fdfs  -v /etc/localtime:/etc/localtime  delron/fastdfs storage</span><br></pre></td></tr></table></figure>
+
+<p>TRACKER_SERVER=本机的ip地址:22122 本机ip地址不要使用127.0.0.1，否则是找容器本地的服务</p>
+<p>进入storage容器</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">docker exec -it 9e4f1fc5775d /bin/bash</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">找到 storage 配置文件地址</span></span><br><span class="line">vi /etc/fdfs/storage.conf</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">配置nginx 在/usr/local/nginx/conf/目录下，修改nginx.conf文件,默认配置不修改也可以</span></span><br><span class="line">vi /usr/local/nginx/conf/nginx.conf</span><br></pre></td></tr></table></figure>
+
+<img src="/Users/hua/Library/Application Support/typora-user-images/image-20211101104844683.png" alt="image-20211101104844683" style="zoom: 50%;" />
+
+
+
+<h3 id="4-测试上传文件"><a href="#4-测试上传文件" class="headerlink" title="4.测试上传文件"></a>4.测试上传文件</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">进入stroage 容器</span></span><br><span class="line">docker exec -it storage /bin/bash</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">进入目录</span></span><br><span class="line">cd /var/fdfs/storage</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">生成文件</span></span><br><span class="line">echo hello afsafsdaffadfad&gt;a.txt</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">上传文件</span></span><br><span class="line">/usr/bin/fdfs_upload_file /etc/fdfs/client.conf a.txt</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="5-开机启动容器"><a href="#5-开机启动容器" class="headerlink" title="5.开机启动容器"></a>5.开机启动容器</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker update --restart=always tracker</span><br><span class="line">docker update --restart=always storage</span><br></pre></td></tr></table></figure>
+
+
+
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="http://example.com/2021/11/01/Docker%20%E5%AE%89%E8%A3%85%20fastdfs/" title="Docker安装fastdfs" target="_blank" rel="external">http://example.com/2021/11/01/Docker 安装 fastdfs/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/huaDs" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/avatar.jpg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/huaDs" target="_blank"><span class="text-dark">HuaDs</span><small class="ml-1x">小菜鸡开发</small></a></h3>
+        <div>个人简介。</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/2021/12/02/Docker%20%E5%AE%89%E8%A3%85ElasticSearch/" title="Docker安装ElasticSearch"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/2021/10/21/JAVA%20%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E5%A4%8D%E4%B9%A0/" title="JAVA设计模式复习"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+    <li class="toggle-toc">
+      <a class="toggle-btn " data-toggle="collapse" href="#collapseToc" aria-expanded="false" title="文章目录" role="button">    <span>[&nbsp;</span><span>文章目录</span>
+        <i class="text-collapsed icon icon-anchor"></i>
+        <i class="text-in icon icon-close"></i>
+        <span>]</span>
+      </a>
+    </li>
+    
+  </ul>
+  
+  
+  
+  <div class="bar-right">
+    
+  </div>
+  </div>
+</nav>
+  
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/huaDs" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="/atom.xml" target="_blank" title="Rss" data-toggle=tooltip data-placement=top><i class="icon icon-rss"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+  var GUEST = ['nick', 'mail', 'link'];
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: '',
+    appKey: '',
+    placeholder: 'Just go go',
+    avatar: 'mm',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: false
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>
